@@ -9,6 +9,36 @@ Minimal logistics tracking pipeline: Go API + Redis Streams worker + Postgres, p
 - Providers: `dummy`, `mock_portal_scrape` (Playwright against mock portal).
 - Local artifacts stored with S3-ready keys.
 
+## Architecture
+
+```mermaid
+flowchart LR
+  Client[Client / CLI] -->|POST /v1/tracking/jobs| API[Go API]
+  Client -->|GET /v1/jobs/{id}| API
+  Client -->|GET /v1/tracking/results/{id}| API
+
+  API -->|insert job| PG[(Postgres)]
+  API -->|XADD tracking:jobs| Redis[(Redis Streams)]
+
+  Worker[Go Worker] -->|XREADGROUP| Redis
+  Worker -->|mark RUNNING/DONE/FAILED| PG
+  Worker -->|insert results| PG
+  Worker -->|insert artifacts metadata| PG
+
+  Worker -->|provider=dummy| Dummy[Dummy Provider]
+  Worker -->|provider=mock_portal_scrape| Scraper[Playwright Scraper]
+
+  Scraper -->|GET /track + /api/track/{code}| Portal[Mock Portal Service]
+  Scraper -->|capture response/HTML/screenshot| ArtifactStore[(./artifacts)]
+
+  Dummy -->|payload.json| ArtifactStore
+```
+
+Notes:
+- Redis stream: `tracking:jobs` with consumer group `tracking-workers`.
+- Job lifecycle: `PENDING` → `RUNNING` → `DONE` or `FAILED`.
+- Artifacts are saved locally and referenced by S3-ready keys in Postgres.
+
 ## Quickstart
 
 ```bash
