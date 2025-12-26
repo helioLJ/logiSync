@@ -1,0 +1,76 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.debug
+
+# Artifacts (local storage)
+artifacts/
+
+# Binaries
+api
+worker
+mock-portal
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.html
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Dependency directories
+vendor/
+
+# Logs
+*.log
+logs/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Playwright
+.gomodcache/
+playwright-report/
+test-results/
+playwright/.cache/
+
+# Go build cache
+.gocache/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.dockerignore
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Local docs/scripts
+AGENTS.md
+plan.md
+test.sh
